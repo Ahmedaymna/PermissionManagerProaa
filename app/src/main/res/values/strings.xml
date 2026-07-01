@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Permission Manager Pro</string>
+    <string name="title_app_detail">تفاصيل التطبيق</string>
+    <string name="title_device_admin">مدير الجهاز</string>
+
+    <string name="label_installed_apps">التطبيقات المثبتة</string>
+    <string name="label_dangerous_permissions">الصلاحيات الحساسة</string>
+    <string name="label_granted">ممنوحة</string>
+    <string name="label_denied">مرفوضة</string>
+
+    <string name="btn_open_settings">فتح إعدادات التطبيق</string>
+    <string name="btn_request_permissions">طلب الصلاحيات</string>
+    <string name="btn_enable_device_admin">تفعيل صلاحيات مدير الجهاز</string>
+    <string name="btn_disable_device_admin">تعطيل صلاحيات مدير الجهاز</string>
+
+    <string name="permission_rationale_title">لماذا نحتاج هذه الصلاحية؟</string>
+    <string name="permission_camera_rationale">نحتاج الكاميرا لعرض حالة صلاحية الكاميرا وإدارتها.</string>
+    <string name="permission_location_rationale">نحتاج الموقع لعرض التطبيقات التي تستخدم بيانات الموقع.</string>
+
+    <string name="notification_channel_name">تنبيهات التطبيقات الجديدة</string>
+    <string name="notification_new_app_title">تطبيق جديد يطلب صلاحيات حساسة</string>
+    <string name="notification_new_app_body">تم تثبيت %1$s ويطلب صلاحيات: %2$s</string>
+
+    <string name="device_admin_active">صلاحيات مدير الجهاز مفعّلة</string>
+    <string name="device_admin_inactive">صلاحيات مدير الجهاز غير مفعّلة</string>
+</resources>

